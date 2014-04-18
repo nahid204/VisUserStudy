@@ -1,0 +1,16 @@
+	1	1984	Fahrenheit 451	1	0
+	2	1984	Brave New(-)World	1	0
+	3	1984	Fahrenheit 451	1	0
+	4	1984	Brave New(-)World	1	0
+opop	1	1984	Fahrenheit 451	1	0
+opop	2	1984	Brave New(-)World	1	0
+opop	3	1984	Fahrenheit 451	1	0
+opop	4	1984	Brave New(-)World	1	0
+kk	1	1984	Fahrenheit 451	1	1409
+kk	2	1984	Brave New(-)World	1	421
+kk	3	1984	Fahrenheit 451	1	447
+kk	4	1984	Brave New(-)World	1	2447
+Your turk id here.	1	Island	Animal Farm	1	5562
+Your turk id here.	2	Paradise	Native Son	1	726
+Your turk id here.	3	Anna Karenina(-)	Oblomov	1	520
+Your turk id here.	4	Metamorphoses	Don Quixote	1	872

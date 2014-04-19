@@ -43,8 +43,8 @@ public class CurveStructure {
 		for(int i=0;i<drawPoint.length;i++){
 					
 					Point p=drawPoint[i];
-					approx.add((double) p.x);
-					approx.add((double) p.y);
+					approx.add((double) p.x+this.origin.x);
+					approx.add((double) p.y+this.origin.y);
 					approx.add((double) 0);
 								
 		}

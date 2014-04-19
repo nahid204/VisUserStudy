@@ -41,7 +41,6 @@ public class CurveStructureViewer extends Viewer2D{
 		// TODO Auto-generated constructor stub
 	}
 
-
 	private void loadProperties()
 	{
 		try {
@@ -56,7 +55,7 @@ public class CurveStructureViewer extends Viewer2D{
 					};
 			this.addProperty(minDistance);
 			
-			Property<PInteger> maxDistance = new Property<PInteger>(PROPERTY_NAME_MAX_DISTANCE, new PInteger(500))
+			Property<PInteger> maxDistance = new Property<PInteger>(PROPERTY_NAME_MAX_DISTANCE, new PInteger(200))
 					{
 						@Override
 						protected boolean updating(PInteger newvalue) {
@@ -94,7 +93,7 @@ public class CurveStructureViewer extends Viewer2D{
 			this.addProperty(curveCount);
 			
 						
-			Property<PInteger> similarityLevel = new Property<PInteger>(PROPERTY_NAME_DIFFICULTY_LEVEL, new PInteger(0))
+			Property<PInteger> difficultyLevel = new Property<PInteger>(PROPERTY_NAME_DIFFICULTY_LEVEL, new PInteger(0))
 					{
 							@Override
 							protected boolean updating(PInteger newvalue) {
@@ -103,7 +102,7 @@ public class CurveStructureViewer extends Viewer2D{
 								return true;
 							}
 					};
-			this.addProperty(similarityLevel);	
+			this.addProperty(difficultyLevel);	
 			Property<PSignal> save = new Property<PSignal>("SaveStimulus", new PSignal())
 					{
 						@Override
@@ -131,8 +130,8 @@ public class CurveStructureViewer extends Viewer2D{
 		
 		ArrayList<CurveStructure> curves = new ArrayList<CurveStructure>();
 				
-		while (true)
-		{
+//		while (true)
+//		{
 			while (curves.size() < curveCount)
 			{
 				//Random curve
@@ -146,6 +145,8 @@ public class CurveStructureViewer extends Viewer2D{
 				Random random = new Random();
 				Point startPoint=new Point(0,0);
 				Point endPoint= new Point(0,0);
+				//Start and end points have fixed x value and random y value.
+				//First Curve is drawn in this if block and added to curves
 				if (curves.size() == 0)
 				{
 					int originx = 100;
@@ -173,14 +174,14 @@ public class CurveStructureViewer extends Viewer2D{
 				}
 				else
 				{
-					//make sure endpoints are not very close to any other endpoints
+					//all other curves are drawn here.If the curve qualify then it is added to curves 
+					// new control point count and new max and new min are calculated here.	
 					int up =controlPointCount*2;
 					int down = controlPointCount/2;
 					int diff = up-down;
 					int rand = (int)Math.abs( random.nextInt());
-					int newControlPointCount = (rand%diff)+up+1;
-							
-
+					int newControlPointCount = (rand%diff)+down+1;
+						
 					int newmax=difference*2;
 					int newmin=difference/2;
 					step =( maxX - minX )/ newControlPointCount;
@@ -189,7 +190,7 @@ public class CurveStructureViewer extends Viewer2D{
 					Point randomOrigin= new Point(originx,originy);
 					Point[]randomPoints  = new Point[newControlPointCount];
 					x=minX;
-					y=(Math.abs(random.nextInt())% (maxDist - minDist))+minDist;
+					y=(Math.abs(random.nextInt())% (newmax - newmin))+newmin;
 					startPoint= new Point(x,y);
 					int j=0;
 					randomPoints[j]=startPoint;
@@ -212,6 +213,7 @@ public class CurveStructureViewer extends Viewer2D{
 					startPoint= new Point(startPoint.x+randomOrigin.x, startPoint.y+randomOrigin.y);
 					endPoint= new Point(endPoint.x+randomOrigin.x, endPoint.y+randomOrigin.y);
 					
+					//make sure start and endpoints are not very close to any other start and endpoints
 					boolean tooClose = false;
 					for (int j1=0; j1<curves.size(); j1++)
 					{
@@ -223,42 +225,53 @@ public class CurveStructureViewer extends Viewer2D{
 						
 						double d1 = Math.sqrt(((startPoint.x-firstPoint.x)*(startPoint.x-firstPoint.x))+((startPoint.y-firstPoint.y)*(startPoint.y-firstPoint.y)));
 						double d2 = Math.sqrt(((endPoint.x-lastPoint.x)*(endPoint.x-lastPoint.x))+((endPoint.y-lastPoint.y)*(endPoint.y-lastPoint.y)));
+						double d = CurveDist.curveToCurveDistance(curves.get(j1).getApproximation(), curve.getApproximation(), 0); 
 						
-						if (d1 < 40 || d2 < 40)
+						// difficulty level 0 means curve could be from 10 to 200 distance from other curves. As the level increases the distance increases.
+						//If the new curve qualify in the distance range then it is added to curves.
+						int minThreshold =(difficultyLevel+1)*10;
+						int maxThreshold =(difficultyLevel+1)*200;
+						
+						if (d1 < 20 || d2 < 20 ||!(d>=minThreshold && d<=maxThreshold))
 						{
 							tooClose = true;
 							break;
 						}
+						
+						
 					}
 					if (tooClose) continue;
 					
 				
 					curves.add(curve);
+				
 				}
+		
 			}
 			
-			ArrayList<Double> allOthers = new ArrayList<Double>();
-			for (int i=1; i<curves.size(); i++)
-			{
-				ArrayList<Double> a = curves.get(i).getApproximation();
-				for (int j=0; j<a.size(); j++)
-					allOthers.add(a.get(j));
-			}
-			
-			double d = CurveDist.curveToCurveDistance(curves.get(0).getApproximation(), allOthers, 0);
-			System.out.println("all curves dist = " + d);
-			
-			int minThreshold =(difficultyLevel+1)*10;
-			int maxThreshold =minThreshold+10;
-			if(d>=minThreshold && d<=maxThreshold)
-				break;
-			else
-				curves.clear();
-			
-			
-		}
+//			ArrayList<Double> allOthers = new ArrayList<Double>();
+//			for (int i=1; i<curves.size(); i++)
+//			{
+//				ArrayList<Double> a = curves.get(i).getApproximation();
+//				for (int j=0; j<a.size(); j++)
+//					allOthers.add(a.get(j));
+//			}
+//			
+//			double d = CurveDist.curveToCurveDistance(curves.get(0).getApproximation(), allOthers, 0);
+//			System.out.println("all curves dist = " + d);
+//			
+//			int minThreshold =(difficultyLevel+1)*10;
+//			int maxThreshold =minThreshold+10;
+//		
+//			if(d>=minThreshold && d<=maxThreshold)
+//				break;
+//			else
+//				curves.clear();
+//		
+//
+//		}
 
-		//-- Curves => curveSt
+		//Curves to curveSt Conversion
 		curveSt = new CurveStructure[curveCount];
 		for(int i=0;i<curves.size();i++){
 			curveSt[i]=curves.get(i);
@@ -317,8 +330,6 @@ public class CurveStructureViewer extends Viewer2D{
 		
 		Graphics2D g = bim.createGraphics();
 		
-	//	g.translate(620, 470);
-		
 		this.render(g);
 		
 		Calendar c = Calendar.getInstance();
@@ -326,7 +337,6 @@ public class CurveStructureViewer extends Viewer2D{
 		
 		try {
 			ImageIO.write(bim, "PNG", new File("c:\\work\\" + filename + ".PNG"));
-			//saveData("c:\\work\\curve_stim_" + filename + ".tex");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

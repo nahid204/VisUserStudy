@@ -72,6 +72,7 @@ public class AreaShapeViewer extends Viewer2D {
 				rand1 = (Math.abs(random.nextDouble())% 9)+1;
 				rand2= (Math.abs(random.nextDouble())% 9)+1;
 				rand3= (Math.abs(random.nextDouble())% ((rand2*1.3)-(rand2*.7))+(rand2*.7))+1;
+				// rand2 is the width of ellipse and rand3 is the height. rand3 is taken as 30% increase or decrease of width because not to stretch out the ellipse.
 				areaCircle= Math.PI* rand1*rand1;
 				areaEllipse=(Math.PI*rand2*rand3)/4;
 				max=Math.max(areaCircle, areaEllipse);
@@ -93,6 +94,7 @@ public class AreaShapeViewer extends Viewer2D {
 				rand1 = (Math.abs(random.nextDouble())% 9)+1;
 				rand2= (Math.abs(random.nextDouble())% 9)+1;
 				rand3= (Math.abs(random.nextDouble())% ((rand2*1.6)-(rand2*.4))+(rand2*.4))+1;
+				// rand2 is the width of ellipse and rand3 is the height. rand3 is taken as 60% increase or decrease of width
 				areaCircle= Math.PI* rand1*rand1;
 				areaEllipse=(Math.PI*rand2*rand3)/4;
 				max=Math.max(areaCircle, areaEllipse);
@@ -100,7 +102,7 @@ public class AreaShapeViewer extends Viewer2D {
 				ratio= max/min;
 				ratio_ellipse=(Math.max(rand2, rand3)/Math.min(rand2, rand3));
 				System.out.println("ratio"+ratio+" ratio ellipse"+ratio_ellipse);
-				if(ratio>=1.31 && ratio<=1.6 && ratio_ellipse<=1.6 && ratio_ellipse>=.6){
+				if(ratio>=1.31 && ratio<=1.6 && ratio_ellipse<=1.6 && ratio_ellipse>=.4){
 					radius=rand1*50;
 					width=rand2*50;
 					height=rand3*50;
@@ -113,6 +115,7 @@ public class AreaShapeViewer extends Viewer2D {
 				rand1 = (Math.abs(random.nextDouble())% 9)+1;
 				rand2= (Math.abs(random.nextDouble())% 9)+1;
 				rand3= (Math.abs(random.nextDouble())% ((rand2*1.9)-(rand2*.1))+(rand2*.1))+1;
+				// rand2 is the width of ellipse and rand3 is the height. rand3 is taken as 90% increase or decrease of width
 				areaCircle= Math.PI* rand1*rand1;
 				areaEllipse=(Math.PI*rand2*rand3)/4;
 				max=Math.max(areaCircle, areaEllipse);

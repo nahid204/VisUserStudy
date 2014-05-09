@@ -45,6 +45,11 @@ public class Rectangle {
 		this.c = c;
 	}
 	
+	public Color getColor()
+	{
+		return this.c;
+	}
+	
 	protected void draw(Graphics2D g)
 	{
 		g.setColor(this.c);

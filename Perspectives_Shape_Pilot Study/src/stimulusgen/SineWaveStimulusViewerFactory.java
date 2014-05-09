@@ -1,8 +1,7 @@
 package stimulusgen;
 
-import perspectives.base.Viewer;
-import perspectives.base.ViewerFactory;
-import perspectives.base.ViewerFactory.RequiredData;
+import perspectives.Viewer;
+import perspectives.ViewerFactory;
 
 public class SineWaveStimulusViewerFactory extends ViewerFactory{
 

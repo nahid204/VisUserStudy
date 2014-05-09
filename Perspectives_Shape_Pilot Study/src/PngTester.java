@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -11,10 +12,10 @@ import javax.imageio.ImageIO;
 
 import perspectives.base.*;
 import perspectives.properties.PFileInput;
-import perspectives.two_d.Viewer2D;
+import perspectives.two_d.JavaAwtRenderer;
 import perspectives.util.PngEncoder;
 
-public class PngTester extends Viewer2D {
+public class PngTester extends Viewer implements JavaAwtRenderer{
 
 	public PngTester(String name) {
 		super(name);
@@ -51,6 +52,48 @@ public class PngTester extends Viewer2D {
 
 	@Override
 	public void simulate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Color getBackgroundColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean mousepressed(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousereleased(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousemoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousedragged(int currentx, int currenty, int oldx, int oldy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void keyPressed(String key, String modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(String key, String modifiers) {
 		// TODO Auto-generated method stub
 		
 	}

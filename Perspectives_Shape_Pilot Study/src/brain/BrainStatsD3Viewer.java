@@ -11,21 +11,24 @@ import java.util.Map.Entry;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import perspectives.base.PropertyManager;
-import perspectives.d3.D3Viewer;
+import perspectives.d3.D3Renderer;
 import perspectives.properties.PString;
 import perspectives.base.Property;
 import perspectives.base.PropertyType;
+import perspectives.base.Viewer;
 import perspectives.three_d.Vector3D;
 
 /**
  *
  * @author rajin
  */
-public class BrainStatsD3Viewer extends D3Viewer{
+public class BrainStatsD3Viewer extends Viewer implements D3Renderer{
     
     private final int TOTAL_CATEGORIES = 10;    
     private BrainData brainData;
     private String lastTubeSelection;
+    
+    boolean isInitialCall = true;
     
     public BrainStatsD3Viewer(String name, BrainData d) {
         super(name);
@@ -58,7 +61,7 @@ public class BrainStatsD3Viewer extends D3Viewer{
     
    
     @Override
-    public JSONObject updateData(boolean isInitialCall) {
+    public JSONObject renderToData() {
     	
         JSONObject data = new JSONObject();
         
@@ -87,6 +90,9 @@ public class BrainStatsD3Viewer extends D3Viewer{
             dataUpdated = false;
         }
         data.put("DataArray", dataArray);
+        
+        isInitialCall = false;
+        
         return data;
     }
     
@@ -157,11 +163,5 @@ public class BrainStatsD3Viewer extends D3Viewer{
         }
         return dataArray;
     }
-
-
-	@Override
-	public String d3codefile() {
-		return "BrainStatsD3Viewer.js";
-	}
 
 }

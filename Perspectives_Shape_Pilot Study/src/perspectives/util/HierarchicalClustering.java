@@ -110,7 +110,7 @@ public class HierarchicalClustering
 			float d =  find_closest_pair(n,distmatrix, ints);
 			int is = ints.int1;
 			int js = ints.int2;
-			System.out.println(d);
+			
 			result[nelements-n].distance = d;
 
 			/* Save result */
@@ -132,21 +132,17 @@ public class HierarchicalClustering
 			
 			for (int j = is+1; j < n; j++)
 			{ 
-				System.out.println(distmatrix[j].length);
+				
 				distmatrix[j][js] = distmatrix[j][is]*number[is] + distmatrix[j][js]*number[js];
 				distmatrix[j][js] /= sum;
 			}
 			
-			for (int j = 0; j < is; j++)
-				{
-				System.out.println("f: " + is + " " + j + " " + (n-1));
+			for (int j = 0; j < is; j++)			
 				distmatrix[is][j] = distmatrix[n-1][j];
-				}
-			for (int j = is+1; j < n-1; j++)
-				{
-				System.out.println("s: " + j + " " + is + " " + (n-1));
+
+			for (int j = is+1; j < n-1; j++)			
 				distmatrix[j][is] = distmatrix[n-1][j];
-				}
+			
 			
 
 

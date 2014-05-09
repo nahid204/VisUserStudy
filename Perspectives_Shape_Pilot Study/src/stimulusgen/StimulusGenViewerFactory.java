@@ -1,7 +1,7 @@
 package stimulusgen;
 
-import perspectives.base.Viewer;
-import perspectives.base.ViewerFactory;
+import perspectives.Viewer;
+import perspectives.ViewerFactory;
 
 public class StimulusGenViewerFactory extends ViewerFactory {
 

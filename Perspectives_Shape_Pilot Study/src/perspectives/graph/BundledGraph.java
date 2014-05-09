@@ -93,10 +93,7 @@ public class BundledGraph extends GraphViewer {
 							double qx1 = drawer.getX(ee1.get(e2));
 							double qx2 =drawer.getX(ee2.get(e2));
 							double qy1 = drawer.getY(ee1.get(e2));
-							double qy2 = drawer.getY(ee2.get(e2));
-							
-							System.out.println("compat1: " + eb.compat.getDistance(e1, e2));
-							System.out.println("compat2: " + new EdgeCompatibility().getCompatibility(new Point2D.Double(px1,py1), new Point2D.Double(px2,py2), new Point2D.Double(qx1,qy1), new Point2D.Double(qx2,qy2), true));
+							double qy2 = drawer.getY(ee2.get(e2));							
 							
 						}
 						

@@ -9,15 +9,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 
-public class DistanceMatrix
+public class DistanceMatrix implements DistancedPoints
 {
 	float[][] d;
 	
 	HashMap<String, Integer> map;
+	String[] elements;
+	
+	int count;
 	
 	public DistanceMatrix(int nrElem)
 	{
-		d = new float[nrElem-1][];
+		d = new float[nrElem][];
 		
 		for (int i=0; i<nrElem; i++)
 			d[i] = new float[i+1];
@@ -25,11 +28,15 @@ public class DistanceMatrix
 		for (int i=0; i<d.length; i++)
 			for (int j=0; j<d[i].length; j++)
 				d[i][j] = Float.MAX_VALUE;
+		
+		count = nrElem;
 	}
 	
 	public DistanceMatrix(String[] elements)
 	{
 		this(elements.length);
+		
+		this.elements = elements;
 		
 		for (int i=0; i<elements.length; i++)
 			map.put(elements[i], new Integer(i));		
@@ -55,7 +62,7 @@ public class DistanceMatrix
 		set(i1.intValue(), i2.intValue(), val);
 	}
 	
-	public double get(int i, int j)
+	public float get(int i, int j)
 	{
 		if (i<j)
 			return d[j][i];
@@ -63,7 +70,7 @@ public class DistanceMatrix
 			return d[i][j];	
 	}
 	
-	public double get(String elem1, String elem2)
+	public float get(String elem1, String elem2)
 	{
 		Integer i1 = map.get(elem1);
 		if (i1 == null) return Float.MAX_VALUE;
@@ -159,9 +166,63 @@ public class DistanceMatrix
 		
 	}
 
-	
-	
-	
+	@Override
+	public int getCount() {
+		return count;
+	}
+
+	@Override
+	public float getDistance(int index1, int index2) {
+		return get(index1, index2);
+	}
+
+	@Override
+	public String getPointId(int index) {
+		if (elements != null && index >=0 && index<elements.length) return elements[index];
+		else
+			return ""+index;
+	}
+
+	@Override
+	public int getPointIndex(String id) {
+		if (map != null)
+		{
+			Integer o = map.get(id);
+			if (o == null) return -1;
+			else return o;
+		}
+		else
+		{
+			try{
+				int i = Integer.parseInt(id);
+				return i;
+			}
+			catch(Exception e)
+			{
+				return -1;
+			}
+		}
+	}
+
+	@Override
+	public void normalize() {
+		float max = -999999;
+		float min = 999999;
+		
+		for (int i=0; i<this.getCount()-1; i++)
+			for (int j=i+1; j<getCount(); j++)
+			{
+				float f = get(i,j);
+				if (f > max) max = f;
+				if (f < min)
+					min = f;
+			}
+		
+		for (int i=0; i<this.getCount()-1; i++)
+			for (int j=i+1; j<getCount(); j++)
+				set(i,j,(float)(get(i,j)-min)/(max-min));
+	}
+
 	
 	
 }

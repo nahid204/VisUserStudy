@@ -75,11 +75,8 @@ public class Trackball
         if (rotAxis.length() == 0)
         	return;
         
-        rotAxis = rotAxis.normalise(null); 
-        
-       System.out.println("rotaxis: " + rotAxis.toString());
-               
-        
+        rotAxis = rotAxis.normalise(null);         
+    
         if (Float.isInfinite(rotAxis.x) || Float.isInfinite(rotAxis.y) || Float.isInfinite(rotAxis.z) || 
         		Float.isNaN(rotAxis.x) || Float.isNaN(rotAxis.y) || Float.isNaN(rotAxis.z) ||
         		rotAxis.x == 0 || rotAxis.y == 0 || rotAxis.z == 0)
@@ -87,9 +84,7 @@ public class Trackball
         
         
         double dot = Vector3f.dot(new Vector3f(v1.x, v1.y, v1.z).normalise(null),new Vector3f(v2.x, v2.y, v2.z).normalise(null));
-        
-        System.out.println("dot: " + dot  + " --- " + v1.toString() + " " + v2.toString());
-        
+       
         double angle = Math.acos(dot);
         
         v1_ = v2_;

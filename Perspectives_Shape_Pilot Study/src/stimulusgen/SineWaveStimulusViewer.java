@@ -14,11 +14,12 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import perspectives.base.Property;
-import perspectives.base.PropertyType;
-import perspectives.properties.PInteger;
-import perspectives.properties.PPercent;
-import perspectives.two_d.Viewer2D;
+import perspectives.Property;
+import perspectives.Viewer2D;
+import properties.PColor;
+import properties.PInteger;
+import properties.PPercent;
+import properties.PropertyType;
 
 public class SineWaveStimulusViewer extends Viewer2D{
 	public static final String PROPERTY_NAME_MIN_DISTANCE = "Distance.Minimum Distance";
@@ -216,75 +217,75 @@ public class SineWaveStimulusViewer extends Viewer2D{
 	
 		while (true)
 		{
-			while (curves.size() < nrcurves)
+		while (curves.size() < nrcurves)
+		{
+			//pick a candidate set of params
+			double dy = Math.random();
+			double damp = Math.random();
+			double dfreq = Math.random();
+			double dang = Math.random();
+			
+			//freq is between 0 and 0.01
+			//damp is between 0 and 400
+			
+		//	double dist = Math.sqrt(dy*dy + dang*dang + (dfreq-nfreq)*(freq-nfreq) + (damp-namp)*(damp-namp));	
+			
+			
+			SineWaveShape sine = new SineWaveShape(0, (int)(dy*150)-100,Color.black, 0.5*(damp+1)*350, 0.5*(dfreq+1)*0.01, dang*Math.PI/2, Math.PI*Math.random());
+			
+			
+			if (curves.size() == 0)
 			{
-				//pick a candidate set of params
-				double dy = Math.random();
-				double damp = Math.random();
-				double dfreq = Math.random();
-				double dang = Math.random();
-				
-				//freq is between 0 and 0.01
-				//damp is between 0 and 400
-				
-			//	double dist = Math.sqrt(dy*dy + dang*dang + (dfreq-nfreq)*(freq-nfreq) + (damp-namp)*(damp-namp));	
-				
-				
-				SineWaveShape sine = new SineWaveShape(0, (int)(dy*150)-100,Color.black, 0.5*(damp+1)*350, 0.5*(dfreq+1)*0.01, dang*Math.PI/2, Math.PI*Math.random());
-				
-				
-				if (curves.size() == 0)
-				{
-					sine = new SineWaveShape(0, (int)(dy*150)-100,Color.black, amplitude, freq, dang*Math.PI/2, Math.PI*Math.random());				
-					curves.add(sine);
-				}
-				else
-				{
-					//make sure endpoints are not very close to any other endpoints
-					double[] sp = sine.firstPoint();
-					double[] ep = sine.lastPoint();
-					boolean tooClose = false;
-					for (int j=0; j<curves.size(); j++)
-					{
-						double[] sp2 = curves.get(j).firstPoint();
-						double[] ep2 = curves.get(j).lastPoint();
-						
-						double d1 = Math.sqrt((sp[0]-sp2[0])*(sp[0]-sp2[0]) + (sp[1]-sp2[1])*(sp[1]-sp2[1]));
-						double d2 = Math.sqrt((ep[0]-ep2[0])*(ep[0]-ep2[0]) + (ep[1]-ep2[1])*(ep[1]-ep2[1]));
-						
-						if (d1 < 20 || d2 < 20)
-						{
-							tooClose = true;
-							break;
-						}
-					}
-					if (tooClose) continue;
-					
-					double d = curves.get(0).distance(sine);
-					
-					//if (d > minDist && d<maxDist)
-					//{		
-							curves.add(sine);
-							System.out.println("d=" + d);
-					//}
-				}
+				sine = new SineWaveShape(0, (int)(dy*150)-100,Color.black, amplitude, freq, dang*Math.PI/2, Math.PI*Math.random());				
+				curves.add(sine);
 			}
-			
-			ArrayList<Double> allOthers = new ArrayList<Double>();
-			for (int i=1; i<curves.size(); i++)
-			{
-				ArrayList<Double> a = curves.get(i).getApproximation();
-				for (int j=0; j<a.size(); j++)
-					allOthers.add(a.get(j));
-			}
-			
-			double d = CurveDist.curveToCurveDistance(curves.get(0).getApproximation(), allOthers, 0);
-			System.out.println("all curves dist = " + d);
-			
-			if (d < minDist || d> maxDist)
-				curves.clear();
 			else
-				break;
+			{
+				//make sure endpoints are not very close to any other endpoints
+				double[] sp = sine.firstPoint();
+				double[] ep = sine.lastPoint();
+				boolean tooClose = false;
+				for (int j=0; j<curves.size(); j++)
+				{
+					double[] sp2 = curves.get(j).firstPoint();
+					double[] ep2 = curves.get(j).lastPoint();
+					
+					double d1 = Math.sqrt((sp[0]-sp2[0])*(sp[0]-sp2[0]) + (sp[1]-sp2[1])*(sp[1]-sp2[1]));
+					double d2 = Math.sqrt((ep[0]-ep2[0])*(ep[0]-ep2[0]) + (ep[1]-ep2[1])*(ep[1]-ep2[1]));
+					
+					if (d1 < 20 || d2 < 20)
+					{
+						tooClose = true;
+						break;
+					}
+				}
+				if (tooClose) continue;
+				
+				double d = curves.get(0).distance(sine);
+				
+				//if (d > minDist && d<maxDist)
+				//{		
+						curves.add(sine);
+						System.out.println("d=" + d);
+				//}
+			}
+		}
+		
+		ArrayList<Double> allOthers = new ArrayList<Double>();
+		for (int i=1; i<curves.size(); i++)
+		{
+			ArrayList<Double> a = curves.get(i).getApproximation();
+			for (int j=0; j<a.size(); j++)
+				allOthers.add(a.get(j));
+		}
+		
+		double d = CurveDist.curveToCurveDistance(curves.get(0).getApproximation(), allOthers, 0);
+		System.out.println("all curves dist = " + d);
+		
+		if (d < minDist || d> maxDist)
+			curves.clear();
+		else
+			break;
 		}
 		
 		

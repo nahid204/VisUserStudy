@@ -39,6 +39,7 @@ import javax.swing.event.InternalFrameListener;
 
 import perspectives.base.Environment;
 import perspectives.base.PEvent;
+import perspectives.base.Viewer;
 import perspectives.base.ViewerContainer;
 
 /**
@@ -69,45 +70,35 @@ public class ViewerContainer2D extends ViewerContainer{
 		
 	JPanel drawArea;
 	
-	public ViewerContainer2D(Viewer2D v, Environment env, int width, int height)
+	boolean antialiasingSet = false;
+	
+	public ViewerContainer2D(Viewer v, Environment env, int width, int height)
 	{
 		super(v,env,width,height);
 			
-		zoom = v.getDefaultZoom();
+		zoom = 1;
 		v.requestRender();
 	
 	}
 	
+	
 	public void render()
 	{
-		BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(),BufferedImage.TYPE_INT_ARGB);
-
-		Graphics2D gc = image.createGraphics();
+		BufferedImage image = getRenderBuffer();
+		Graphics2D gc = (Graphics2D)image.getGraphics();		
+	
 
 		gc.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-		gc.setColor(((Viewer2D)viewer).getBackgroundColor());
+		gc.setColor(((JavaAwtRenderer)viewer).getBackgroundColor());
 		gc.fillRect(0, 0, this.getWidth(), this.getHeight()); // fill in background
+           		
+		gc.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 
-		if (!((Viewer2D)viewer).antialiasingSet)
-		{
-			if (((Viewer2D)viewer).antialiasing)
-			{	            		
-				gc.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-						RenderingHints.VALUE_ANTIALIAS_ON);
+		gc.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-				gc.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-						RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			}
-			else
-			{
-				gc.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-						RenderingHints.VALUE_ANTIALIAS_OFF);
-
-				gc.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-						RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-			}
-		}
 
 		zoomOriginX = this.getWidth()/2;
 		zoomOriginY = this.getHeight()/2;
@@ -119,15 +110,14 @@ public class ViewerContainer2D extends ViewerContainer{
 		
 		transform = gc.getTransform();
 		
-		((Viewer2D)getViewer()).render(gc);
+		((JavaAwtRenderer)getViewer()).render(gc);
 
 	     gc.setTransform(AffineTransform.getTranslateInstance(0, 0));
          //render tooltip
         
-	     if (((Viewer2D) viewer).getToolTipText().length() > 0) 
-                  ((Viewer2D) viewer).renderTooltip(gc);             
-		
-	     System.out.println("container2d rendered");
+	     if (viewer.getToolTipText().length() > 0) 
+                  viewer.renderTooltip(gc);             
+		   
 		 this.setViewerImage(image);	
 	}
 
@@ -175,11 +165,11 @@ public class ViewerContainer2D extends ViewerContainer{
 			this.render();
 		}
 		
-		((Viewer2D)viewer).keyPressed(code, modifiers);
+		((JavaAwtRenderer)viewer).keyPressed(code, modifiers);
 	}
 
 	protected void keyReleased(String code, String modifiers) {
-		((Viewer2D)viewer).keyReleased(code, modifiers);				
+		((JavaAwtRenderer)viewer).keyReleased(code, modifiers);				
 	}
 	
 
@@ -199,7 +189,7 @@ public class ViewerContainer2D extends ViewerContainer{
 			int x = (int)tp.x;
 			int y = (int)tp.y;
 			
-			((Viewer2D)viewer).mousepressed(x,y, button);
+			((JavaAwtRenderer)viewer).mousepressed(x,y, button);
 			
 			
 			dragPrevX = ex;
@@ -231,7 +221,7 @@ public class ViewerContainer2D extends ViewerContainer{
 			int y = (int)tp.y;
 		
 		
-			((Viewer2D)viewer).mousereleased(x,y, button);
+			((JavaAwtRenderer)viewer).mousereleased(x,y, button);
 			
 			if (button == MouseEvent.BUTTON3){
                             rightButtonDown = false;
@@ -248,7 +238,7 @@ public class ViewerContainer2D extends ViewerContainer{
 	
 	protected void mouseDragged(int ex, int ey) {
 		
-		((Viewer2D)viewer).setToolTipCoordinates(ex,ey);
+		viewer.setToolTipCoordinates(ex,ey);
 		
 		try{
 			Point2D.Double tp = new Point2D.Double();
@@ -260,7 +250,7 @@ public class ViewerContainer2D extends ViewerContainer{
 			int px = (int)tp.x;
 			int py = (int)tp.y;
 		
-		if (!((Viewer2D)viewer).mousedragged(x,y, px, py))
+		if (!((JavaAwtRenderer)viewer).mousedragged(x,y, px, py))
 		{
 			if (rightButtonDown) //zoom
 			{
@@ -276,6 +266,8 @@ public class ViewerContainer2D extends ViewerContainer{
 				translatex += (ex-dragPrevX)/zoom;
 				translatey += (ey-dragPrevY)/zoom;
 			}
+			
+			viewer.viewChanged();
 			//this.render();
 		}
                 
@@ -293,10 +285,10 @@ public class ViewerContainer2D extends ViewerContainer{
 	}
 	protected void mouseMoved(int ex, int ey)
 	{
-		if (((Viewer2D)viewer) == null)
+		if (viewer == null)
 			return;
 		
-		((Viewer2D)viewer).setToolTipCoordinates(ex,ey);
+		viewer.setToolTipCoordinates(ex,ey);
 		
 		try{
 			Point2D.Double tp = new Point2D.Double();
@@ -304,7 +296,7 @@ public class ViewerContainer2D extends ViewerContainer{
 			int x = (int)tp.x;
 			int y = (int)tp.y;	
 
-		((Viewer2D)viewer).mousemoved(x,y);
+		((JavaAwtRenderer)viewer).mousemoved(x,y);
 		
 		//if (viewer.getToolTipText() != "")                
         // this.render();

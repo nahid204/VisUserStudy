@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-import perspectives.three_d.Vector3D;
+import util.Vector3D;
 
 public class SineWaveShape{
 	public int width =1200;

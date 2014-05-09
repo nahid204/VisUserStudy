@@ -2,9 +2,7 @@ package stimulusgen;
 
 import java.util.ArrayList;
 
-import perspectives.three_d.Vector3D;
-
-
+import util.Vector3D;
 
 public class CurveDist {
 

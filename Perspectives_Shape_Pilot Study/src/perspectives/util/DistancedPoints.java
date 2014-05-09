@@ -6,6 +6,8 @@ public interface DistancedPoints
 	public abstract float getDistance(int index1, int index2);
 	
 	public abstract String getPointId(int index);
+	public abstract int getPointIndex(String id);
 	
-	public abstract long getLastUpdateTime();
+	public abstract void normalize();
+
 }

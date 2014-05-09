@@ -13,8 +13,9 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import perspectives.base.Property;
 import perspectives.base.PropertyManager;
+import perspectives.base.Viewer;
+import perspectives.three_d.LWJGL3DRenderer;
 import perspectives.three_d.Vector3D;
-import perspectives.three_d.Viewer3D;
 import perspectives.properties.PBoolean;
 import perspectives.properties.PColor;
 import perspectives.properties.PInteger;
@@ -23,18 +24,17 @@ import perspectives.properties.PSignal;
 import perspectives.properties.PString;
 
 
-public class BrainViewer extends Viewer3D{
+public class BrainViewer extends Viewer implements LWJGL3DRenderer{
 
-	private BrainData data;
-	private BrainModel brainModel;
+	protected BrainData data;
+	protected BrainModel brainModel;
 	
-	private Vector3D[][] projectedSegments;
-	private Rectangle2D[] projectedRects;	
-	private float[] modelMatrix = new float[16];
-	private float[] projectionMatrix = new float[16];
-	private int[] viewport = new int[4];
+	protected Vector3D[][] projectedSegments;	
+	protected float[] modelMatrix = new float[16];
+	protected float[] projectionMatrix = new float[16];
+	protected int[] viewport = new int[4];
 	
-	private Point2D[][] tubeProjections;
+	protected Point2D[][] tubeProjections;
 	
 	private boolean onlySelected = false;
 
@@ -155,7 +155,7 @@ public class BrainViewer extends Viewer3D{
 	
 
 	@Override
-	public void render() {
+	public void render3D() {
 		
 		long ttt = new Date().getTime();	
 		
@@ -215,10 +215,6 @@ public class BrainViewer extends Viewer3D{
 		
 	}
 
-	@Override
-	public String getViewerType() {
-		return "Viewer3D";
-	}
 	
 	boolean drag = false;
 	int startX, startY;
@@ -246,8 +242,11 @@ public class BrainViewer extends Viewer3D{
 		{
 			drag = false;
 			
+			long t = new Date().getTime();
 			for (int i=0; i<brainModel.getTubeCount(); i++)
 				tubeProjections[i] = brainModel.project(i, modelMatrix, projectionMatrix, viewport);
+			t = new Date().getTime()-t;
+			System.out.println("brain projected in " + t + " ms");
 			
 			Line2D.Double l = new Line2D.Double(startX, startY, x, y);
 			
@@ -320,5 +319,26 @@ public class BrainViewer extends Viewer3D{
 					s += "," + i;
 			}
 		return s;
+	}
+
+
+	@Override
+	public Color getBackgroundColor() {
+		return Color.white;
+	}
+
+
+	@Override
+	public boolean mousemoved(int x, int y) {
+		return false;
+	}
+
+	@Override
+	public void keyPressed(String key, String modifiers) {
+	}
+
+
+	@Override
+	public void keyReleased(String key, String modifiers) {	
 	}
 }

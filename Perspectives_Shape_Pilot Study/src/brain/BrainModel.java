@@ -281,6 +281,11 @@ public class BrainModel {
 	
 	public Point2D[] project(int tube, float[] modelMatrix, float[] projectionMatrix, int[] viewport)
 	{
+		return project(tube, modelMatrix, projectionMatrix, viewport, 1);
+	}
+	
+	public Point2D[] project(int tube, float[] modelMatrix, float[] projectionMatrix, int[] viewport, int step)
+	{
 		GLU glu = new GLU();
 		
 	   	 FloatBuffer modelbuf = BufferUtils.createFloatBuffer(16);
@@ -290,9 +295,10 @@ public class BrainModel {
     	 IntBuffer viewportbuf = BufferUtils.createIntBuffer(4);
     	 viewportbuf.put(viewport); viewportbuf.rewind();
 		
-		Point2D[] projectedSegments = new Point2D[tubes[tube].segments.length];
+		Point2D[] projectedSegments = new Point2D[(int)Math.ceil(tubes[tube].segments.length/(double)step)];
 		
-		for (int j=0; j<projectedSegments.length; j++)
+		int cnt = 0;
+		for (int j=0; j<tubes[tube].segments.length; j=j+step)
 		{
 				FloatBuffer result = BufferUtils.createFloatBuffer(3);
 				
@@ -302,7 +308,7 @@ public class BrainModel {
 			
 				Point2D p = new Point2D.Double(result.get(0), viewport[3] - result.get(1) -1);		
 				
-				projectedSegments[j] = p;
+				projectedSegments[cnt++] = p;
 		}	
 	
 		return projectedSegments;

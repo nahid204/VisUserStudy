@@ -71,8 +71,9 @@ import perspectives.base.PropertyWidgetFactory;
 import perspectives.base.PropertyWidget;
 import perspectives.util.*;
 
-import perspectives.two_d.Viewer2D;
-import perspectives.three_d.Viewer3D;
+
+import perspectives.three_d.LWJGL3DRenderer;
+import perspectives.two_d.JavaAwtRenderer;
 import perspectives.two_d.ViewerContainer2D;
 import perspectives.three_d.ViewerContainer3D;
 
@@ -518,10 +519,10 @@ public class Environment extends PropertyManagerGroup implements Serializable{
 		v.setPropertyManagerGroup(this);
 		
 		final ViewerContainer vc;
-		if (v.getViewerType().equals("Viewer3D"))
-			vc = new ViewerContainer3D((Viewer3D)v,this,1000,700);
-		else if (v.getViewerType().equals("Viewer2D"))
-			vc = new ViewerContainer2D((Viewer2D)v,this,1000,700);
+		if (v instanceof LWJGL3DRenderer)
+			vc = new ViewerContainer3D(v,this,1000,700);
+		else if (v instanceof JavaAwtRenderer)
+			vc = new ViewerContainer2D(v,this,1000,700);
 		else vc = null;
 		
 		viewers.add(v);

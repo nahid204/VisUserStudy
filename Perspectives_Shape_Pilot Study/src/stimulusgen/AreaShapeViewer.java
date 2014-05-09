@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Random;
@@ -13,22 +15,29 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import perspectives.base.Property;
+import perspectives.base.Viewer;
 import perspectives.properties.PInteger;
 import perspectives.properties.PSignal;
-import perspectives.two_d.Viewer2D;
+import perspectives.two_d.JavaAwtRenderer;
 
-public class AreaShapeViewer extends Viewer2D {
+public class AreaShapeViewer extends Viewer implements JavaAwtRenderer {
 	public static final String PROPERTY_NAME_DIFFICULTY_LEVEL = "Difficulty Level";
 	public double radius=0;
 	public double width=0;
 	public double height=0;
 	int difficultyLevel;
 	
+	double area1;
+	double area2;
+	String answer=null;
+	long time=1000;
+	
 
 	public AreaShapeViewer(String name) {
 		super(name);
 		this.loadProperties();
 		// TODO Auto-generated constructor stub
+		changeShape(0);
 	}
 	
 	private void loadProperties()
@@ -38,18 +47,28 @@ public class AreaShapeViewer extends Viewer2D {
 					{
 							@Override
 							protected boolean updating(PInteger newvalue) {
-								// TODO Auto-generated method stub
-								changeShape();
+								changeShape(newvalue.intValue());
 								return true;
 							}
 					};
 			this.addProperty(difficultyLevel);
 			
+					
+			Property<PSignal> regen = new Property<PSignal>("Regen", new PSignal())
+					{
+							@Override
+							protected boolean updating(PSignal newvalue) {
+								changeShape(((PInteger)getProperty(PROPERTY_NAME_DIFFICULTY_LEVEL).getValue()).intValue());
+								return true;
+							}
+					};
+			this.addProperty(regen);
+			
+			
 			Property<PSignal> save = new Property<PSignal>("SaveStimulus", new PSignal())
 					{
 						@Override
 						protected boolean updating(PSignal newvalue) {
-							// TODO Auto-generated method stub
 							saveStimulus();
 							return true;
 						}
@@ -61,29 +80,41 @@ public class AreaShapeViewer extends Viewer2D {
 		}
 	}
 	
-	private void changeShape()
+	private void changeShape(int difficultyLevel)
 	{
-		this.setBackgroundColor(Color.lightGray);
-		difficultyLevel = this.getPropertyIntValue(PROPERTY_NAME_DIFFICULTY_LEVEL);
 		double rand1,rand2,rand3, areaCircle,areaEllipse,ratio,max,min,ratio_ellipse;
 		Random random = new Random();
+		
 		if(difficultyLevel==0){
 			while(true){
 				rand1 = (Math.abs(random.nextDouble())% 9)+1;
 				rand2= (Math.abs(random.nextDouble())% 9)+1;
-				rand3= (Math.abs(random.nextDouble())% ((rand2*1.3)-(rand2*.7))+(rand2*.7))+1;
+				rand3= (Math.abs(random.nextDouble())% 9)+1;
 				// rand2 is the width of ellipse and rand3 is the height. rand3 is taken as 30% increase or decrease of width because not to stretch out the ellipse.
 				areaCircle= Math.PI* rand1*rand1;
-				areaEllipse=(Math.PI*rand2*rand3)/4;
+				areaEllipse=(Math.PI*rand2*rand3);
 				max=Math.max(areaCircle, areaEllipse);
 				min=Math.min(areaCircle, areaEllipse);				
-				ratio= max/min;
+				ratio= min/max;
 				ratio_ellipse=(Math.max(rand2, rand3)/Math.min(rand2, rand3));
-				System.out.println("ratio"+ratio+"\t ratio ellipse"+ratio_ellipse);
-				if(ratio>=1.61 && ratio<=2 && ratio_ellipse<=1.3 && ratio_ellipse>=.7 ){
-					radius=rand1*50;
-					width=rand2*50;
-					height=rand3*50;
+				double score = ratio * ratio_ellipse;
+				System.out.println("score " + score);
+				time=6000;
+				
+				
+				if(ratio < 0.65 && score > 0.6 && score < 0.8){
+					radius=rand1;
+					width=rand2;
+					height=rand3;
+					
+					area1 = areaCircle;
+					area2 = areaEllipse;
+					if(area1>=area2){
+						answer="left";
+					}
+					if(area1<area2){
+						answer="right";
+					}
 					break;
 				}
 			}
@@ -93,19 +124,30 @@ public class AreaShapeViewer extends Viewer2D {
 			while(true){
 				rand1 = (Math.abs(random.nextDouble())% 9)+1;
 				rand2= (Math.abs(random.nextDouble())% 9)+1;
-				rand3= (Math.abs(random.nextDouble())% ((rand2*1.6)-(rand2*.4))+(rand2*.4))+1;
+				rand3= (Math.abs(random.nextDouble())% 9)+1;
 				// rand2 is the width of ellipse and rand3 is the height. rand3 is taken as 60% increase or decrease of width
 				areaCircle= Math.PI* rand1*rand1;
-				areaEllipse=(Math.PI*rand2*rand3)/4;
+				areaEllipse=(Math.PI*rand2*rand3);
 				max=Math.max(areaCircle, areaEllipse);
 				min=Math.min(areaCircle, areaEllipse);
-				ratio= max/min;
+				ratio= min/max;
 				ratio_ellipse=(Math.max(rand2, rand3)/Math.min(rand2, rand3));
-				System.out.println("ratio"+ratio+" ratio ellipse"+ratio_ellipse);
-				if(ratio>=1.31 && ratio<=1.6 && ratio_ellipse<=1.6 && ratio_ellipse>=.4){
-					radius=rand1*50;
-					width=rand2*50;
-					height=rand3*50;
+				double score = ratio * ratio_ellipse;
+				System.out.println("score " + score);
+				time=10000;
+				
+				if(ratio > 0.7 && ratio < 0.85 && score >= 1.2 && score < 1.4){
+					radius=rand1;
+					width=rand2;
+					height=rand3;
+					area1 = areaCircle;
+					area2 = areaEllipse;
+					if(area1>=area2){
+						answer="left";
+					}
+					if(area1<area2){
+						answer="right";
+					}
 					break;
 				}
 			}
@@ -114,19 +156,29 @@ public class AreaShapeViewer extends Viewer2D {
 			while(true){
 				rand1 = (Math.abs(random.nextDouble())% 9)+1;
 				rand2= (Math.abs(random.nextDouble())% 9)+1;
-				rand3= (Math.abs(random.nextDouble())% ((rand2*1.9)-(rand2*.1))+(rand2*.1))+1;
+				rand3= (Math.abs(random.nextDouble())% 9)+1;
 				// rand2 is the width of ellipse and rand3 is the height. rand3 is taken as 90% increase or decrease of width
 				areaCircle= Math.PI* rand1*rand1;
-				areaEllipse=(Math.PI*rand2*rand3)/4;
+				areaEllipse=(Math.PI*rand2*rand3);
 				max=Math.max(areaCircle, areaEllipse);
 				min=Math.min(areaCircle, areaEllipse);
-				ratio= max/min;
+				ratio= min/max;
 				ratio_ellipse=(Math.max(rand2, rand3)/Math.min(rand2, rand3));
-				System.out.println("ratio"+ratio+" ratio ellipse"+ratio_ellipse);
-				if(ratio>=1 && ratio<=1.3 && ratio_ellipse<=1.9 && ratio_ellipse>=.1){
-					radius=rand1*50;
-					width=rand2*50;
-					height=rand3*50;
+				double score = ratio * ratio_ellipse;
+				System.out.println("score " + score);
+				time=20000;
+				if(ratio > 0.85 && ratio < 0.95 && score >= 1.8 && score < 2){
+					radius=rand1;
+					width=rand2;
+					height=rand3;
+					area1 = areaCircle;
+					area2 = areaEllipse;
+					if(area1>=area2){
+						answer="left";
+					}
+					if(area1<area2){
+						answer="right";
+					}
 					break;
 				}
 			}
@@ -143,43 +195,72 @@ public class AreaShapeViewer extends Viewer2D {
 	
 	public void saveStimulus()
 	{		
-		BufferedImage bim = new BufferedImage(1240,940, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bim = new BufferedImage(1400,1400, BufferedImage.TYPE_INT_ARGB);
 		
 		Graphics2D g = bim.createGraphics();
 		
-//		g.translate(620, 470);
 		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect(0, 0, 1240, 940);
+		g.fillRect(0, 0, 1400, 1400);
 		
 		this.render(g);
 		
 		Calendar c = Calendar.getInstance();
-		//String filename ="" + c.get(c.DAY_OF_YEAR) + c.get(c.HOUR) + c.get(c.MINUTE) + c.get(c.SECOND);
-		String filename ="TASK 3" +"-" +"Difficulty Level" +difficultyLevel;
+		String filename ="TASK AREA"+"-" + this.getPropertyIntValue(PROPERTY_NAME_DIFFICULTY_LEVEL)+"-"+c.get(c.DAY_OF_YEAR) + c.get(c.HOUR) + c.get(c.MINUTE) + c.get(c.SECOND);
 		
 		try {
-			ImageIO.write(bim, "PNG", new File("c:\\work\\" + filename + ".PNG"));
-			//saveData("c:\\work\\curve_stim_" + filename + ".tex");
+			ImageIO.write(bim, "PNG", new File("c:\\work\\Area Task\\" + filename + ".PNG"));
+			String imageFilePath = "Area Task\\" + filename + ".PNG";
+			String data = imageFilePath+"\tAREA\t"+this.getPropertyIntValue(PROPERTY_NAME_DIFFICULTY_LEVEL)+"\t"+answer+"\t"+(this.getPropertyIntValue(PROPERTY_NAME_DIFFICULTY_LEVEL)+3)+"\t1\t"+time+"\r\n";
+			String dataFileName="Result.tex";
+			saveResult("c:\\work\\"+dataFileName,data);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+		
+	private void saveResult(String filePath, String data)
+	{
+        try {
+            FileWriter fstream;
+            File f = new File(filePath);
+            if(!f.exists())
+            {
+            	f.createNewFile();
+            }
+            
+            fstream = new FileWriter(f, true);
+
+            BufferedWriter br = new BufferedWriter(fstream);
+            
+            br.append(data);
+            
+            
+            br.close();
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+	}
 
 	@Override
 	public void render(Graphics2D g) {
 		// TODO Auto-generated method stub
-		Font font = new Font("Verdana", Font.BOLD, 26);
+		//Font font = new Font("Verdana", Font.BOLD, 26);
 		if(radius != 0 &&  width!=0 && height !=0)
 		{
 			
 			g.setColor(Color.black);
 			//g.setFont(font);
-			g.fillOval(400, 400,(int) (2*radius),(int) (2*radius));
+			g.fillOval(400, 500,(int) (100*radius),(int) (100*radius));
 			g.setColor(Color.red);
-			g.fillOval(800, 400, (int)width, (int)height);
+			g.fillOval(800, 500, (int)(100*width), (int)(100*height));
 			
 		}
+		
 		// TODO Auto-generated method stub
 		
 	}
@@ -187,6 +268,48 @@ public class AreaShapeViewer extends Viewer2D {
 	
 	@Override
 	public void simulate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Color getBackgroundColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean mousepressed(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousereleased(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousemoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousedragged(int currentx, int currenty, int oldx, int oldy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void keyPressed(String key, String modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(String key, String modifiers) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -15,14 +15,13 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-import perspectives.base.Property;
-import perspectives.properties.PColor;
-import perspectives.properties.PInteger;
-import perspectives.two_d.Viewer2D;
+import perspectives.Property;
+import perspectives.Viewer2D;
+import properties.PColor;
+import properties.PInteger;
+import util.Util;
 
 public class StimulusGenViewer extends Viewer2D{
-	public static final String OUTPUT_DIR="C:\\Shapes\\Perspectives_Shape_Pilot Study\\work\\";
-	
 	public static final String PROPERTY_NAME_MIN_DISTANCE = "Distance.Minimum Distance";
 	public static final String PROPERTY_NAME_MAX_DISTANCE = "Distance.Maximum Distance";
 	public static final String PROPERTY_NAME_SIZE = "Size";
@@ -52,82 +51,26 @@ public class StimulusGenViewer extends Viewer2D{
 	private void loadProperties()
 	{
 		try {
-			Property<PInteger> minDistance = new Property<PInteger>(PROPERTY_NAME_MIN_DISTANCE, new PInteger(50))
-					{
-						protected boolean updating(PInteger newvalue) {
-							int maxDist = getPropertyIntValue(PROPERTY_NAME_MAX_DISTANCE);		
-							int objectCount = getPropertyIntValue(PROPERTY_NAME_OBJECT_COUNT);
-							plotter = getPlotter(objectCount, ((PInteger)newvalue).intValue(), maxDist);
-							backgroundImage = createBackgroundImage();
-							
-							requestRender();
-							return true;
-						};
-					};
+			Property<PInteger> minDistance = new Property<PInteger>(PROPERTY_NAME_MIN_DISTANCE, new PInteger(50));
 			this.addProperty(minDistance);
 			
-			Property<PInteger> maxDistance = new Property<PInteger>(PROPERTY_NAME_MAX_DISTANCE, new PInteger(100))
-					{
-						@Override
-						protected boolean updating(PInteger newvalue) {
-							int minDist = getPropertyIntValue(PROPERTY_NAME_MIN_DISTANCE);		
-							int objectCount = getPropertyIntValue(PROPERTY_NAME_OBJECT_COUNT);
-							plotter = getPlotter(objectCount, minDist, ((PInteger)newvalue).intValue());
-							backgroundImage = createBackgroundImage();
-							
-							requestRender();
-							return true;
-						}
-					};
+			Property<PInteger> maxDistance = new Property<PInteger>(PROPERTY_NAME_MAX_DISTANCE, new PInteger(100));
 			this.addProperty(maxDistance);
 			
 			Property<PInteger> size = new Property<PInteger>(PROPERTY_NAME_SIZE, new PInteger(20));
 			this.addProperty(size);
 			
-			Property<PInteger> colorDifference = new Property<PInteger>(PROPERTY_NAME_COLOR_DIFFERENCE, new PInteger(7))
-					{
-						@Override
-						protected boolean updating(PInteger newvalue) {
-							colorDif = ((PInteger)newvalue).intValue();
-							backgroundImage = createBackgroundImage();
-							
-							requestRender();
-							return true;
-						}
-					};
+			Property<PInteger> colorDifference = new Property<PInteger>(PROPERTY_NAME_COLOR_DIFFERENCE, new PInteger(7));
 			this.addProperty(colorDifference);
 			
-			Property<PInteger> objectCount = new Property<PInteger>(PROPERTY_NAME_OBJECT_COUNT, new PInteger(15))
-					{
-						@Override
-						protected boolean updating(PInteger newvalue) {
-							int minDist = getPropertyIntValue(PROPERTY_NAME_MIN_DISTANCE);
-							int maxDist = getPropertyIntValue(PROPERTY_NAME_MAX_DISTANCE);	
-							plotter = getPlotter(((PInteger)newvalue).intValue(), minDist, maxDist);
-							backgroundImage = createBackgroundImage();
-							
-							requestRender();
-							return true;
-						}
-					};
+			Property<PInteger> objectCount = new Property<PInteger>(PROPERTY_NAME_OBJECT_COUNT, new PInteger(15));
 			this.addProperty(objectCount);
 			
 			
 			Property<PInteger> backgroundCopies = new Property<PInteger>(PROPERTY_NAME_BACKGROUND_NOISE, new PInteger(11));
 			this.addProperty(backgroundCopies);
 			
-			Property<PInteger> save = new Property<PInteger>("SaveStimulus", new PInteger(0))
-					{
-						@Override
-						protected boolean updating(PInteger newvalue) {
-							saveStimulus();
-							backgroundImage = createBackgroundImage();
-							
-							requestRender();
-							return true;
-						}
-				
-					};
+			Property<PInteger> save = new Property<PInteger>("SaveStimulus", new PInteger(0));
 			this.addProperty(save);
 			
 			
@@ -157,7 +100,31 @@ public class StimulusGenViewer extends Viewer2D{
 		
 		return plotter;
 	}
-	
+	public <T extends properties.PropertyType> void propertyUpdated(Property p, T newvalue)
+	{
+		int minDist = this.getPropertyIntValue(PROPERTY_NAME_MIN_DISTANCE);
+		int maxDist = this.getPropertyIntValue(PROPERTY_NAME_MAX_DISTANCE);		
+		int objectCount = this.getPropertyIntValue(PROPERTY_NAME_OBJECT_COUNT);
+		
+		if (p.getName().equals(PROPERTY_NAME_MIN_DISTANCE))
+			plotter = this.getPlotter(objectCount, ((PInteger)newvalue).intValue(), maxDist);	
+		else if (p.getName().equals(this.PROPERTY_NAME_MAX_DISTANCE))
+			plotter = this.getPlotter(objectCount, minDist, ((PInteger)newvalue).intValue());
+		else if (p.getName().equals(this.PROPERTY_NAME_OBJECT_COUNT))
+			plotter = this.getPlotter(((PInteger)newvalue).intValue(), minDist, maxDist);
+		else if (p.getName().equals(this.PROPERTY_NAME_COLOR_DIFFERENCE))
+		{
+			colorDif = ((PInteger)newvalue).intValue();
+		}
+		else if (p.getName().equals("SaveStimulus"))
+		{
+			this.saveStimulus();
+		}
+		
+		backgroundImage = createBackgroundImage();
+		
+		this.requestRender();
+	}
 	int colorDif = 0;
 
 	@Override
@@ -248,8 +215,8 @@ public class StimulusGenViewer extends Viewer2D{
 		String filename ="" + c.get(c.DAY_OF_YEAR) + c.get(c.HOUR) + c.get(c.MINUTE) + c.get(c.SECOND);
 		
 		try {
-			ImageIO.write(bim, "PNG", new File(OUTPUT_DIR+"stim_" + filename + ".PNG"));
-			saveData(OUTPUT_DIR+"stim_" + filename + ".tex");
+			ImageIO.write(bim, "PNG", new File("c:\\work\\stim_" + filename + ".PNG"));
+			saveData("c:\\work\\stim_" + filename + ".tex");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

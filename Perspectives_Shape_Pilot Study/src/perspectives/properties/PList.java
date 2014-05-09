@@ -15,7 +15,12 @@ public class PList extends PropertyType
 		selectedIndeces = new int[0];
 		items = new String[0];
 	}
-
+	
+	public PList(String[] list)
+	{
+		items = list;
+		selectedIndeces = new int[0];
+	}
 	@Override
 	public PList copy() {
 		// TODO Auto-generated method stub

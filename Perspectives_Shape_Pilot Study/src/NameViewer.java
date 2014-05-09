@@ -3,13 +3,14 @@ import java.awt.Graphics2D;
 
 import perspectives.base.Property;
 import perspectives.base.PropertyManager;
+import perspectives.base.Viewer;
 import perspectives.properties.PColor;
 import perspectives.properties.POptions;
 import perspectives.properties.PString;
-import perspectives.two_d.Viewer2D;
+import perspectives.two_d.JavaAwtRenderer;
 
 
-public class NameViewer extends Viewer2D{
+public class NameViewer extends Viewer implements JavaAwtRenderer{
 
 	NameData nameData;
 	
@@ -104,6 +105,42 @@ public class NameViewer extends Viewer2D{
 
 	@Override
 	public void simulate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Color getBackgroundColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean mousereleased(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousemoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousedragged(int currentx, int currenty, int oldx, int oldy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void keyPressed(String key, String modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(String key, String modifiers) {
 		// TODO Auto-generated method stub
 		
 	}

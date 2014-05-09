@@ -50,9 +50,9 @@ public class GraphData extends DataSource {
 									String fs = pf.options[pf.selectedIndex];
 									
 									
-									if (fs.equals("GraphML"))
-										graph.fromGraphML(new File(((PFileInput) newvalue_).path));
-									else if (fs.equals("EdgeList"))
+									//if (fs.equals("GraphML"))
+									//	graph.fromGraphML(new File(((PFileInput) newvalue_).path));
+									/*else*/ if (fs.equals("EdgeList"))
 										graph.fromEdgeList(new File(((PFileInput)newvalue_).path));	
 									
 								

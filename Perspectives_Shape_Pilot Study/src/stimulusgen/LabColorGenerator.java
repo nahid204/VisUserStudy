@@ -4,7 +4,7 @@ package stimulusgen;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import perspectives.util.Util;
+import util.Util;
 
 public class LabColorGenerator {
 	public double l;

@@ -3,10 +3,12 @@ package perspectives.multidimensional;
 import perspectives.*;
 import perspectives.base.Property;
 import perspectives.base.PropertyType;
+import perspectives.base.Viewer;
 import perspectives.properties.PFileOutput;
 import perspectives.properties.PInteger;
-import perspectives.two_d.Viewer2D;
-import perspectives.util.DistanceMatrix2;
+import perspectives.two_d.JavaAwtRenderer;
+import perspectives.util.DistanceMatrixDataSource;
+import perspectives.util.DistancedPoints;
 import perspectives.util.TableData;
 
 import java.awt.Color;
@@ -19,23 +21,31 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class PlanarProjectionViewer extends Viewer2D 
+public class PlanarProjectionViewer extends Viewer implements JavaAwtRenderer 
 {
 	
 	Embedder2D embedder = null;	
-	DistanceMatrix2 dm;
 	Color[] colors = null;
+	
+	public PlanarProjectionViewer(String name, DistanceMatrixDataSource d)
+	{
+		super(name);
+		constructor(d.dm);
+	}
 
 	public PlanarProjectionViewer(String name, TableData t)
 	{
 		super(name);
-		
-		this.dm = t.toDistanceMatrix2();
-		embedder = new SpringEmbedder(dm);
+		constructor(t.getTable());
+
+	}
+	
+	private void constructor(DistancedPoints d)
+	{
+		d.normalize();
+		embedder = new SpringEmbedder(d);
 		
 		this.startSimulation(30);
-		
-
 		
 		try
 		{
@@ -76,18 +86,23 @@ public class PlanarProjectionViewer extends Viewer2D
 		if (embedder == null)
 			return;
 		
-		for (int i=0; i<dm.getCount(); i++)
+		for (int i=0; i<embedder.getCount(); i++)
 		{
 			int x = (int)(embedder.getX(i)*500);
 			int y = (int)(embedder.getY(i)*500);
 			
-			System.out.println(x + " " + y);
+			//System.out.println(x + " " + y);
 			
 			if (colors != null && i<colors.length)
 				g.setColor(colors[i]);
 			else		
 				g.setColor(Color.black);
-			g.fillOval(x-10, y-10, 20, 20);			
+			g.fillOval(x-10, y-10, 20, 20);	
+			
+			g.setColor(Color.red);
+			g.drawString(""+i, x-10, y);
+			
+			
 			
 		}
 	}
@@ -97,7 +112,7 @@ public class PlanarProjectionViewer extends Viewer2D
 		try{
 			
 			PrintWriter bw = new PrintWriter(new FileWriter(new File(path)));								 
-			for (int i=0; i<dm.getCount(); i++)
+			for (int i=0; i<embedder.getCount(); i++)
 			{
 					Color c = this.embedder.getColor(i);						
 					String s = c.getRed() + "\t" + c.getGreen() + " \t" + c.getBlue();
@@ -110,5 +125,46 @@ public class PlanarProjectionViewer extends Viewer2D
 			{
 				e.printStackTrace();
 			};
+	}
+
+	@Override
+	public Color getBackgroundColor() {
+		return Color.white;
+	}
+
+	@Override
+	public boolean mousepressed(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousereleased(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousemoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousedragged(int currentx, int currenty, int oldx, int oldy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void keyPressed(String key, String modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(String key, String modifiers) {
+		// TODO Auto-generated method stub
+		
 	}
 }

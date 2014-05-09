@@ -14,6 +14,16 @@ public class PFileInput  extends PropertyType{
 	public boolean filesAndDirectories = false;
 
 	public String dialogTitle = "";
+	
+	public PFileInput(String path)
+	{
+		this.path = path;
+	}
+	
+	public PFileInput()
+	{
+		
+	}
 
 
 	public PFileInput copy() {

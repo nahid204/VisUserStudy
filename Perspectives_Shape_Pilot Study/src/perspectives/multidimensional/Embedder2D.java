@@ -14,16 +14,14 @@ public abstract class Embedder2D {
 	protected Vector2D[] xy;
 	ArrayList<String> savedPoints = null; //saved nodes in case the graph is modified
 	
-	long tableLastUpdated;
-	
+		
 	double maxX, maxY, minX, minY;
 	
 	
 	public Embedder2D(DistancedPoints p)
 	{
 		this.points = p;
-		tableLastUpdated = points.getLastUpdateTime();
-		
+				
 		savedPoints = new ArrayList<String>();
 		for (int i=0; i<points.getCount(); i++)
 			savedPoints.add(points.getPointId(i));
@@ -39,18 +37,16 @@ public abstract class Embedder2D {
 		minY = 0;
 	}
 	
+	public int getCount()
+	{
+		return points.getCount();
+	}
 	public abstract void iteration();	
 	
 	public double getX(int index)
 	{
 		if (index < 0 || index >= xy.length)
-		{
 			System.exit(0);
-		}
-		
-		long u = points.getLastUpdateTime();
-		if (tableLastUpdated != u )
-			updateStructure(u);
 		
 		return xy[index].x;
 	}
@@ -58,13 +54,7 @@ public abstract class Embedder2D {
 	public double getY(int index)
 	{
 		if (index < 0 || index >= xy.length)
-		{
-			System.exit(0);
-		}		
-		
-		long u = points.getLastUpdateTime();
-		if (tableLastUpdated != u )
-			updateStructure(u);
+			System.exit(0);		
 		
 		return xy[index].y;
 	}
@@ -73,33 +63,19 @@ public abstract class Embedder2D {
 	public void setX(int index, double x)
 	{
 		if (index < 0 || index >= xy.length)
-		{
 			System.exit(0);
-		}
-		
-		long u = points.getLastUpdateTime();
-		if (tableLastUpdated != u )
-			updateStructure(u);
 		
 		xy[index].x = x;
 		
 		if (x> maxX) maxX = x;
 		if (x< minX) minX = x;
-		
 	}
 	
 	public void setY(int index, double y)
 	{
 		if (index < 0 || index >= xy.length)
-		{
-			
 			System.exit(0);
-		}
-		
-		long u = points.getLastUpdateTime();
-		if (tableLastUpdated != u )
-			updateStructure(u);
-		
+				
 		xy[index].y = y;
 		
 		if (y> maxY) maxY = y;
@@ -107,9 +83,7 @@ public abstract class Embedder2D {
 	}
 	
 	private void updateStructure(long u)
-	{
-		tableLastUpdated = u;
-		
+	{		
 		ArrayList<String> newPoints = new ArrayList<String>();
 		for (int i=0; i<points.getCount(); i++)
 			newPoints.add(points.getPointId(i));

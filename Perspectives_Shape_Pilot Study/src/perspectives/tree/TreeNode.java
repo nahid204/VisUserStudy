@@ -6,25 +6,18 @@ import perspectives.base.Property;
 
 public class TreeNode
 {
-	ArrayList<TreeNode> childs; //package protected
+	private ArrayList<TreeNode> childs;	
+	private TreeNode parent;	
+	private ArrayList<Property> properties;
 	
-	private String id;
+	private ArrayList<TreeNodeChangeListener> listeners;
 	
-	TreeNode parent;	//package protected
-	
-	ArrayList<Property> properties;
-	
-	public TreeNode(String id)
+	public TreeNode()
 	{
 		childs = new ArrayList<TreeNode>();
-		this.id = id;
 		parent = null;
 		properties = new ArrayList<Property>();
-	}
-	
-	public String id()
-	{
-		return id;
+		listeners = new ArrayList<TreeNodeChangeListener>();
 	}
 	
 	public boolean isLeaf()
@@ -40,14 +33,32 @@ public class TreeNode
 		return false;
 	}
 	
-	public TreeNode[] children()
+	public TreeNode[] getChildren()
 	{
 		TreeNode[] r = new TreeNode[childs.size()];
 		childs.toArray(r);
 		return r;
 	}
 	
-	public Property property(String name)
+	public void addChild(TreeNode child)
+	{
+		childs.add(child);
+		for (int i=0; i<listeners.size(); i++)
+			listeners.get(i).childAdded(this,child);
+	}
+	
+	public void removeChild(TreeNode child)
+	{
+		int index = childs.indexOf(child);
+		if (index < 0)
+			return;
+		
+		childs.remove(index);
+		for (int i=0; i<listeners.size(); i++)
+			listeners.get(i).childRemoved(this,child);
+	}
+	
+	public Property getProperty(String name)
 	{
 		for (int i=0; i<properties.size(); i++)
 			if (properties.get(i).getName() == name)
@@ -55,7 +66,7 @@ public class TreeNode
 		return null;
 	}
 	
-	public ArrayList<Property> allProperties()
+	public ArrayList<Property> getProperties()
 	{
 		return properties;
 	}
@@ -76,7 +87,7 @@ public class TreeNode
 	
 	public void removeProperty(String name)
 	{
-		removeProperty(property(name));
+		removeProperty(getProperty(name));
 	}
 	
 }

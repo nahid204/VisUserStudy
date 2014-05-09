@@ -62,7 +62,8 @@ public class PIntegerWidget extends PropertyWidget {
 
 	@Override
 	public <T extends PropertyType> void propertyValueUpdated(T newvalue) {
-		control.setValue(((PInteger)newvalue).intValue());
+		if (control != null)
+			control.setValue(((PInteger)newvalue).intValue());
 	}
 
 	@Override

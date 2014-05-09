@@ -25,7 +25,7 @@ import perspectives.base.PropertyManager;
 import perspectives.base.Viewer;
 import perspectives.base.ViewerContainer;
 import perspectives.base.ViewerFactory;
-import perspectives.d3.D3Viewer;
+import perspectives.d3.D3Renderer;
 
 
 public class ViewerCanvas extends HttpServlet {
@@ -214,6 +214,8 @@ public class ViewerCanvas extends HttpServlet {
         int x = Integer.parseInt(xs);
         int y = Integer.parseInt(ys);
         
+   
+        
      
 
         boolean leftMouse = false;
@@ -233,7 +235,7 @@ public class ViewerCanvas extends HttpServlet {
         
         else if (cmd.equalsIgnoreCase("mouseDown"))
         {
-        	//System.out.println("mousedown + " + x  + " " + y + "  " + leftMouse);
+        	System.out.println("mousedown + " + x  + " " + y + "  " + leftMouse);
             if (leftMouse) 
             	vc.scheduleMousePress(x, y, MouseEvent.BUTTON1);
             else
@@ -289,9 +291,9 @@ public class ViewerCanvas extends HttpServlet {
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Expires", "-1");
 
-            D3Viewer viewer = (D3Viewer) vc.getViewer();
+            D3Renderer viewer = (D3Renderer) vc.getViewer();
             PrintWriter out = response.getWriter();
-            out.println(viewer.updateData(false));
+            out.println(viewer.renderToData());
 
     }
     

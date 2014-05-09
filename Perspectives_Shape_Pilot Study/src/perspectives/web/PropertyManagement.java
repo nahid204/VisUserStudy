@@ -77,16 +77,13 @@ public class PropertyManagement extends HttpServlet {
 	                PropertyManager pm = getPropertyManager(e,pmn);
 	                if (pm != null)
 	                	outResponse = pollProps(pm, request, response);
-	               // System.out.println("pollprops " + pmn + ": " + outResponse + " end poll props");
 	           } 
 	           
 	           else if (request.getParameter("page").equals("init")) {
 	                String pmn = request.getParameter("propManagerName");
 	                
 	                PropertyManager pm = getPropertyManager(e,pmn);
-	                
-	              //  System.out
-	                
+	                	                
 	                if (pm != null)
 	                {	                		                	
 	                	String propertyString = getProperties(e, pm); 	                	
@@ -344,6 +341,7 @@ public class PropertyManagement extends HttpServlet {
        }
       return propCommands;
     }
+
     
     
 

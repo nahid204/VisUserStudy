@@ -99,7 +99,8 @@ import perspectives.base.PropertyType;
 			{
 				value = newValue;
 				for (int i=0; i<pcl.size(); i++)
-					pcl.get(i).propertyValueChanges(this, newValue);
+					if (pcl.get(i) != null)
+						pcl.get(i).propertyValueChanges(this, newValue);
 				return true;
 			}
 			return false;

@@ -52,4 +52,9 @@ public class Label extends Rectangle {
 		return font;
 	}
 	
+	public String getText()
+	{
+		return text;
+	}
+	
 }

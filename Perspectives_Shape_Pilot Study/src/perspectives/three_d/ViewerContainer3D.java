@@ -24,6 +24,7 @@ import org.lwjgl.util.glu.GLU;
 
 import perspectives.base.Environment;
 import perspectives.base.PEvent;
+import perspectives.base.Viewer;
 import perspectives.base.ViewerContainer;
 import perspectives.three_d.ObjectController3D;
 
@@ -50,16 +51,14 @@ public class ViewerContainer3D extends ViewerContainer {
     int oldx = 0, oldy = 0;
     Pbuffer pbuffer;
 
-    public ViewerContainer3D(Viewer3D v, Environment env, int width, int height) {
+    public ViewerContainer3D(Viewer v, Environment env, int width, int height) {
         super(v, env, width, height);
 
-        System.out.println("creating viewer cont 3D");
+
 
         this.env = env;
 
         //GLProfile glp = GLProfile.getDefault();	 
-
-        System.out.println("creating viewer cont 3D _ 1");
 
         try {
 
@@ -88,7 +87,7 @@ public class ViewerContainer3D extends ViewerContainer {
         viewer.em.scheduleEvent(new PEvent() {
             public void process() {
                 BufferedImage image = th.display();
-                ((Viewer3D) viewer).render2DOverlay(image.createGraphics());
+                ((LWJGL3DRenderer) viewer).render2DOverlay(image.createGraphics());
                 renderDoneCallback(image);
 
             }
@@ -123,13 +122,15 @@ public class ViewerContainer3D extends ViewerContainer {
 
     protected void mouseMoved(int x, int y) {
         lastMouseMove = new Date().getTime();
-        ((Viewer3D) viewer).mousemoved(x, y);
+        ((LWJGL3DRenderer)viewer).mousemoved(x, y);
     }
 
     protected void mouseDragged(int x, int y) {
-        if (!((Viewer3D) viewer).mousedragged(x, y, oldx, oldy)) {
-            controller.mouseDragged(x, y, pbuffer);
+        if (!((LWJGL3DRenderer)viewer).mousedragged(x, y, oldx, oldy)) {
+            controller.mouseDragged(x, y, pbuffer);   
+            viewer.viewChanged();
             viewer.requestRender();
+           
         }
         oldx = x;
         oldy = y;
@@ -138,7 +139,7 @@ public class ViewerContainer3D extends ViewerContainer {
 
 	protected void mousePressed(int x, int y, int button)
 	{
-		if (!((Viewer3D)viewer).mousepressed(x, y, button))
+		if (!((LWJGL3DRenderer)viewer).mousepressed(x, y, button))
 		{
 			controller.mousePressed(x, y,button, pbuffer);	
 			viewer.requestRender();
@@ -152,7 +153,7 @@ public class ViewerContainer3D extends ViewerContainer {
 	protected void mouseReleased(int x, int y, int button)
 	{
 
-		if (!((Viewer3D)viewer).mousereleased(x, y, button))
+		if (!((LWJGL3DRenderer)viewer).mousereleased(x, y, button))
 		{
 			controller.mouseReleased(x, y, button, pbuffer);		
 			viewer.requestRender();
@@ -179,11 +180,8 @@ public class ViewerContainer3D extends ViewerContainer {
     public BufferedImage display() {
         synchronized (o) {
             try {
-                this.pbuffer.makeCurrent();
-                System.out.println(":::display ::: No Exception 1");
-            } catch (LWJGLException e) {
-                // TODO Auto-generated catch block
-                System.out.println(":::display ::: Exception 1");
+                this.pbuffer.makeCurrent();               
+            } catch (LWJGLException e) {               
                 e.printStackTrace();
             }
 
@@ -192,8 +190,7 @@ public class ViewerContainer3D extends ViewerContainer {
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glLoadIdentity();
             GLU.gluPerspective(60f, width / (float) height, 1f, 100.0f);
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            System.out.println(":::display ::: No Exception 2");
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);          
             DoubleBuffer db1 = BufferUtils.createDoubleBuffer(16);
             db1.put(new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -5, 1});
             db1.rewind();
@@ -201,28 +198,23 @@ public class ViewerContainer3D extends ViewerContainer {
             DoubleBuffer db2 = BufferUtils.createDoubleBuffer(16);
             db2.put(controller.mvmatrix);
             db2.rewind();
-            GL11.glMultMatrix(db2);
-
-            
-            System.out.println(width + " " + height);
+            GL11.glMultMatrix(db2);            
+          
             GL11.glViewport(0, 0, width, height);
             GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-            ((Viewer3D) viewer).render();
+            ((LWJGL3DRenderer)viewer).render3D();
 
             //  controller.render();
 
 
-            BufferedImage image = this.glToImage();
-            System.out.println(":::display ::: No Exception 5");
+            BufferedImage image = this.glToImage();          
             try {
-                pbuffer.releaseContext();
-                System.out.println(":::display ::: No Exception 6");
+                pbuffer.releaseContext();               
                 return image;
-            } catch (LWJGLException e) {
-                // TODO Auto-generated catch block
-                System.out.println(":::display ::: Exception 2");
+            } catch (LWJGLException e) {  
+              
                 e.printStackTrace();
                 BufferedImage image2 = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
                 return image2;
@@ -247,8 +239,6 @@ public class ViewerContainer3D extends ViewerContainer {
 
         long ttt = new Date().getTime();
         GL11.glReadPixels(0, 0, 1800, 1200, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, 0);
-        System.out.println("time: " + (new Date().getTime() - ttt));
-
         //process the data from the "current" buffer, pbo1
         ARBBufferObject.glBindBufferARB(ARBPixelBufferObject.GL_PIXEL_PACK_BUFFER_BINDING_ARB, pbo1);
         if (pixelsRGB == null) {
@@ -322,16 +312,13 @@ public class ViewerContainer3D extends ViewerContainer {
             //  GL11.glBindBuffer(GL11.GL_, vertexPointerTri);
             //GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 1);
             GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
-
-            System.out.println("::GLError():  " + GL11.glGetError() + " width-height: " + width + "-" + height);
+        
             //   GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL11.GL_INT, pixelsRGB);
             // GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL11.GL_UNSIGNED_SHORT, pixelsRGB);
             //GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixelsRGB);
             GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixelsRGB);
        
-            System.out.println("::GLError():  " + GL11.glGetError());
-
-            System.out.println(":::glToImage ::: No Exception 1");
+      
             long ttt2 = new Date().getTime();
 
             //put the pixels in the right format
@@ -342,8 +329,7 @@ public class ViewerContainer3D extends ViewerContainer {
 
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             int[] pixelInts = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-
-            System.out.println(":::glToImage ::: No Exception 2");
+         
             for (int row = 0; row < height; row++) {
                 p -= w3;
                 q = p;
@@ -377,14 +363,11 @@ public class ViewerContainer3D extends ViewerContainer {
 
             long ttt3 = new Date().getTime();
 
-
             long ttt4 = new Date().getTime();
-            System.out.println("write buffer to image: " + (ttt2 - ttt1) + " " + (ttt3 - ttt2) + " " + (ttt4 - ttt3));
-            System.out.println(":::glToImage ::: No Exception 3");
+         
             return image;
 
-        } catch (Exception e) {
-            System.out.println(":::glToImage :: Exception 1");
+        } catch (Exception e) {          
             e.printStackTrace();
             BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
             Graphics g = image.createGraphics();

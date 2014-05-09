@@ -15,9 +15,9 @@ public class SpringEmbedder extends Embedder2D {
 	int smax = 20;
 	int vmax = 10;
 	
-	double maxStep = 0.01;
+	double maxStep = 5;
 	
-	double k = 0.001;
+	double k = 0.01;
 	
 	DistancedPoints points;
 	
@@ -73,6 +73,8 @@ public class SpringEmbedder extends Embedder2D {
 		        double forceSign = -Math.signum(realDistance - expectedDistance);		           
 
 		        double force = forceSign * k * forceDelta;
+		        
+		        force *= (1-expectedDistance);
 		 
 		        fx[i] += (p1.getX()-p2.getX())/realDistance * force;
 		        fy[i] += (p1.getY()-p2.getY())/realDistance * force;
@@ -99,12 +101,12 @@ public class SpringEmbedder extends Embedder2D {
 			setY(i,y + fy[i]);
 		}
 			
-		//maxStep = Math.max(2,max_step * 0.95);		
+		maxStep = maxStep * 0.995;		
 	}
 	
 	public void iteration()
 	{
-		if (points.getCount() < 100)
+		if (points.getCount() < 500)
 		{
 			basicStep();
 			return;
@@ -205,6 +207,8 @@ public class SpringEmbedder extends Embedder2D {
 
 		        double force = forceSign * k * forceDelta;
 		 
+		       // force = force * (1-expectedDistance);
+		        
 		        fx[i] += (p1.getX()-p2.getX())/realDistance * force;
 		        fy[i] += (p1.getY()-p2.getY())/realDistance * force;
 		        
@@ -230,7 +234,7 @@ public class SpringEmbedder extends Embedder2D {
 			setY(i,y + fy[i]);
 		}
 			
-		//maxStep = Math.max(2,max_step * 0.95);
+		maxStep = maxStep * 0.995;
 
 		   
 	}

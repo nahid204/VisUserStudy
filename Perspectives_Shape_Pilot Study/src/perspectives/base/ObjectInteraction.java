@@ -103,19 +103,24 @@ public class ObjectInteraction {
 	
 	boolean dragging;
 	
-	int nrSelected = 0;
-	
 	int selectMode = 0;
 	
 	boolean ctrlDown = false;
 	
 	boolean weDragged = false;
 	
+	boolean noDragging = false;
+	
 	public ObjectInteraction()
 	{
 		items = new ArrayList<VisualItem>();
 		layers = new ArrayList< ArrayList<Integer> >();	
 		layers.add(new ArrayList<Integer>());
+	}
+	
+	public void setNoDragging(boolean n)
+	{
+		noDragging = n;
 	}
 	
 	public void addItem(VisualItem item)
@@ -143,14 +148,14 @@ public class ObjectInteraction {
 		return items.size();
 	}
 	
+	
 	public void clearSelection()
 	{
-		nrSelected = 0;
 		for (int i=0; i<items.size(); i++)
 			items.get(0).selected = false;
 	}
 	
-	
+
 	
 	//callbacks
 	protected void mouseIn(int object)
@@ -222,7 +227,7 @@ public class ObjectInteraction {
 		}
 		
 		//dragging
-		for (int i=0; dragging && i<items.size(); i++)
+		for (int i=0; !noDragging && dragging && i<items.size(); i++)
 		{
 			if (items.get(i).selected)
 			{
@@ -269,7 +274,7 @@ public class ObjectInteraction {
 		{
 			if (!ctrlDown)
 			{
-				int[] desel = new int[nrSelected];
+				int[] desel = new int[getNrSelected()];
 				int ct = 0;
 				for (int i=0; i<items.size(); i++)
 					if (items.get(i).selected)
@@ -279,7 +284,6 @@ public class ObjectInteraction {
 						ct++;					
 					}
 				itemsDeselected(desel);
-				nrSelected -= desel.length;
 			}
 			
 			if (selectMode == 1)
@@ -287,8 +291,7 @@ public class ObjectInteraction {
 				int[] sel = new int[1];
 				sel[0] = index;
 				items.get(index).selected = true;
-				itemsSelected(sel);
-				nrSelected += sel.length;
+				itemsSelected(sel);				
 			}
 		}
 	}
@@ -301,7 +304,7 @@ public class ObjectInteraction {
 			{
 				if (!ctrlDown)
 				{
-					int[] desel = new int[nrSelected];
+					int[] desel = new int[getNrSelected()];
 					int ct = 0;
 					for (int i=0; i<items.size(); i++)
 						if (items.get(i).selected)
@@ -310,8 +313,7 @@ public class ObjectInteraction {
 							desel[ct] = i;
 							ct++;					
 						}
-					itemsDeselected(desel);	
-					nrSelected -= desel.length;
+					itemsDeselected(desel);					
 				}
 				
 				for (int i=0; i<items.size(); i++)
@@ -325,14 +327,12 @@ public class ObjectInteraction {
 					if (!ctrlDown)
 					{
 					items.get(i).selected = true;
-					itemsSelected(sel);
-					nrSelected += sel.length;
+					itemsSelected(sel);					
 					}
 					else
 					{
 						items.get(i).selected = false;
-						itemsDeselected(sel);
-						nrSelected -= sel.length;
+						itemsDeselected(sel);						
 					}
 					break;
 				}
@@ -350,6 +350,20 @@ public class ObjectInteraction {
 	public void ctrlRelease()
 	{
 		ctrlDown = false;
+	}
+	
+	public int getNumberOfItems()
+	{
+		return items.size();
+	}
+	
+	private int getNrSelected()
+	{
+		int res = 0;
+		for (int i=0; i<items.size(); i++)
+			if (items.get(i).selected)
+			res++;
+		return res;
 	}
 
 }

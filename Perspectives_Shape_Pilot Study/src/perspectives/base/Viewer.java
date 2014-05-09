@@ -14,8 +14,7 @@ import javax.swing.Timer;
 import perspectives.base.PropertyType;
 
 import perspectives.base.Animation;
-import perspectives.three_d.Viewer3D;
-import perspectives.three_d.ViewerContainer3D;
+import perspectives.properties.PBoolean;
 
 /**
  * 
@@ -37,6 +36,9 @@ public abstract class Viewer extends PropertyManager
 	private int tooltipX = 0;
 	private int tooltipY = 0;
 	private long tooltipDelay = 1000;	
+	
+	private boolean visibleProperties = true;
+	private boolean propertyBarVisible = true;
 	
 	
 	public void simulate()
@@ -95,16 +97,23 @@ public abstract class Viewer extends PropertyManager
 		
 		animations = new ArrayList<Animation>();
 		em = new EventManager();
+		
+		Property<PBoolean> p1 = new Property<PBoolean>("Vviieewweerr.NoVisibleProperties", new PBoolean(false));
+		p1.setVisible(false);
+		p1.setPublic(false);
+		addProperty(p1);
+		
+		Property<PBoolean> p2 = new Property<PBoolean>("Vviieewweerr.PropertyBarHidden", new PBoolean(false));
+		p2.setVisible(false);
+		p2.setPublic(false);
+		addProperty(p2);
 	}
-	
-	public abstract String getViewerType();
-	
+		
 	ArrayList<Animation> animations;
 	boolean animating = false;	
 	private class AnimateEvent implements PEvent
 	{
 		public void process() {
-			//System.out.println("animation 2");
 			animate();						
 			if (animating)
 				em.replaceEvent(new AnimateEvent(), "animate", 50);	
@@ -132,7 +141,6 @@ public abstract class Viewer extends PropertyManager
 			em.replaceEvent(new PEvent()
 			{
 				public void process() {
-					System.out.println("container renders");
 					container.render();					
 				}
 			},"render");
@@ -256,6 +264,35 @@ public abstract class Viewer extends PropertyManager
 	protected void resized()
 	{
 		
+	}
+	
+	public void viewChanged()
+	{
+		
+	}
+	
+	public void setNoVisibleProperties(boolean vp)
+	{
+		getProperty("Vviieewweerr.NoVisibleProperties").setValue(new PBoolean(vp));
+		if (container != null)
+			container.noVisiblePropertiesChanged();
+	}
+	
+	public boolean getNoVisibleProperties()
+	{
+		return ((PBoolean)getProperty("Vviieewweerr.NoVisibleProperties").getValue()).boolValue();
+	}
+	
+	public void setPropertyBarHidden(boolean how)
+	{
+		getProperty("Vviieewweerr.PropertyBarHidden").setValue(new PBoolean(how));		
+		if (container != null)
+			container.propertyBarHiddenChanged();
+	}
+	
+	public boolean getPropertyBarHidden()
+	{
+		return ((PBoolean)getProperty("Vviieewweerr.PropertyBarHidden").getValue()).boolValue();
 	}
 	
 	

@@ -36,6 +36,9 @@ import javax.swing.JToggleButton;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import perspectives.three_d.*;
+import perspectives.two_d.*;
+
 
 public class ViewerWindow extends JInternalFrame  {
 
@@ -59,15 +62,8 @@ public class ViewerWindow extends JInternalFrame  {
 		viewerContainer = vc;	
 		vc.window = this;
 		
-		if (viewerContainer.viewer.getViewerType() == "ViewerGUI")
-		{
-			drawArea = new JPanel();			
-			vg = (ViewerGUI)viewerContainer.viewer;			
-			vg.setContentPanel(drawArea);
-			vg.init();	
-		}
 		
-		if (vc.viewer.getViewerType() == "Viewer2D" || vc.viewer.getViewerType() == "Viewer3D")
+		if (vc.viewer instanceof JavaAwtRenderer || vc.viewer instanceof LWJGL3DRenderer)
 		{	
 			drawArea = new JPanel()
 			{
@@ -257,6 +253,11 @@ public class ViewerWindow extends JInternalFrame  {
 			}
 		});
 		
+	}
+	
+	public JPanel getDrawArea()
+	{
+		return drawArea;
 	}
 	
 }

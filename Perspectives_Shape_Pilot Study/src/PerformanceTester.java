@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,8 +16,9 @@ import perspectives.base.EventManager;
 import perspectives.base.PEvent;
 import perspectives.base.Property;
 import perspectives.base.Task;
+import perspectives.base.Viewer;
 import perspectives.properties.PInteger;
-import perspectives.two_d.Viewer2D;
+import perspectives.two_d.JavaAwtRenderer;
 import perspectives.web.InitServlet;
 import perspectives.web.ViewerManagement;
 
@@ -26,7 +28,7 @@ import com.meterware.servletunit.ServletUnitClient;
 
 
 
-public class PerformanceTester extends Viewer2D{
+public class PerformanceTester extends Viewer implements JavaAwtRenderer{
 	
 	String root = "http://vizlab.cs.fiu.edu/vizonlineTesting/";
 	//String root = "http://localhost:8080/vizonline/";
@@ -240,6 +242,48 @@ public class PerformanceTester extends Viewer2D{
 
 	@Override
 	public void simulate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Color getBackgroundColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean mousepressed(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousereleased(int x, int y, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousemoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mousedragged(int currentx, int currenty, int oldx, int oldy) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void keyPressed(String key, String modifiers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(String key, String modifiers) {
 		// TODO Auto-generated method stub
 		
 	}

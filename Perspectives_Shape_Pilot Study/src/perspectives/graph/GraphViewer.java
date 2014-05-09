@@ -30,7 +30,8 @@ import javax.imageio.ImageIO;
 import perspectives.base.Property;
 import perspectives.base.PropertyManager;
 import perspectives.base.Task;
-import perspectives.two_d.Viewer2D;
+import perspectives.base.Viewer;
+import perspectives.two_d.JavaAwtRenderer;
 import perspectives.properties.PBoolean;
 import perspectives.properties.PColor;
 import perspectives.properties.PDouble;
@@ -48,7 +49,7 @@ import perspectives.util.Util;
 
 import perspectives.base.ObjectInteraction;
 
-public class GraphViewer extends Viewer2D {
+public class GraphViewer extends Viewer implements JavaAwtRenderer {
 
     protected Graph graph;
     GraphDrawer drawer;
@@ -436,7 +437,6 @@ public class GraphViewer extends Viewer2D {
     @Override
     public boolean mousereleased(int x, int y, int button) {
         ovalInteraction.mouseRelease(x, y);
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -444,8 +444,6 @@ public class GraphViewer extends Viewer2D {
     public boolean mousemoved(int x, int y) {
         boolean ret = ovalInteraction.mouseMove(x, y);
         return ret;
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -453,23 +451,16 @@ public class GraphViewer extends Viewer2D {
         boolean ret;
         ret = ovalInteraction.mouseMove(x, y);
         return ret;
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void keyPressed(String key, String mod) {
-    	System.out.println("graph viewer keypress: " + key + " , " + mod);
         ovalInteraction.ctrlPress();
-        // TODO Auto-generated method stub
-        super.keyPressed(key, mod);
     }
 
     @Override
     public void keyReleased(String key, String mod) {
         ovalInteraction.ctrlRelease();
-        // TODO Auto-generated method stub
-        super.keyReleased(key, mod);
     }
     
     
@@ -629,4 +620,10 @@ public class GraphViewer extends Viewer2D {
     	ovals.get(index).x = x;
     	ovals.get(index).y = y;
     }
+
+	@Override
+	public Color getBackgroundColor() {
+		return Color.white;
+	}
+
 }

@@ -1,6 +1,9 @@
 package perspectives.tree;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 import perspectives.base.DataSource;
 import perspectives.base.Property;
@@ -14,53 +17,71 @@ public class TreeData extends DataSource{
 	Tree tree;
 	
 	boolean valid;
+	
+	private ArrayList<TreeParser> treeParsers;
 
 	public TreeData(String name) {
 		super(name);
 		
 		tree = null;
 		valid = false;
-	
+		
+		treeParsers = new ArrayList<TreeParser>();
+		treeParsers.add(new MLTreeParser());
+		treeParsers.add(new TextTreeParser());
+		treeParsers.add(new MatlabLinkageParser());
 		
 		try {
 			PFileInput f = new PFileInput();
-			f.dialogTitle = "Open Graph File";
-			f.extensions = new String[]{"txt","xml","*"};			
-			Property<PFileInput> p1 = new Property<PFileInput>("Tree File",f)
+			f.dialogTitle = "Open Graph File";		
+			Property<PFileInput> p1 = new Property<PFileInput>("Tree File", f)
 			{
 
 				@Override
 				protected boolean updating(PFileInput newvalue) {
 					POptions format = (POptions)getProperty("Format").getValue();
-					tree = new Tree(new File(((PFileInput)newvalue).path),format.options[format.selectedIndex]);					
-					setLoaded(true);
+					
+					System.out.println("TreeData, tree file: " + format.selectedIndex + " " + newvalue.path);
+					
+					TreeParser p = treeParsers.get(format.selectedIndex);
+					
+					File f = new File(newvalue.path);
+					
+					try {
+						tree = p.from(new FileInputStream(f));
+						setLoaded(true);
+					} catch (FileNotFoundException e) {						
+						e.printStackTrace();
+					}									
+					
 					return true;
 				}
 				
 			};
 			this.addProperty(p1);
 			
-			POptions o = new POptions(new String[]{"Newick", "GraphML"});			
-			Property<POptions> p2 = new Property<POptions>("Format", o)
-					{
-						@Override
-						protected boolean updating(POptions newvalue) {
-							String fs = newvalue.options[newvalue.selectedIndex];
-							
-							if (fs.equals("GraphML"))
-								((PFileInput)getProperty("Graph File").getValue()).currentExtension = 1;
-							else if (fs.equals("Newick"))
-								((PFileInput)getProperty("Graph File").getValue()).currentExtension = 0;
-							
-							return true;
-						}
-					};
-			p2.setValue(o);
+			String[] parserNames = new String[treeParsers.size()];
+			for (int i=0; i<parserNames.length; i++) parserNames[i] = treeParsers.get(i).getName();			
+			POptions o = new POptions(parserNames);	
+			
+			Property<POptions> p2 = new Property<POptions>("Format", o);			
 			this.addProperty(p2);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
+	}
+	
+	public void addTreeParser(TreeParser p)
+	{
+		if (treeParsers.indexOf(p) < 0)
+			treeParsers.add(p);
+		
+		String[] parserNames = new String[treeParsers.size()];
+		for (int i=0; i<parserNames.length; i++) parserNames[i] = treeParsers.get(i).getName();	
+		POptions o = new POptions(parserNames);			
+		
+		getProperty("Format").setValue(o);
 	}
 
 }

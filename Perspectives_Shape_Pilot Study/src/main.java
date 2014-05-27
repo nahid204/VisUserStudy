@@ -32,6 +32,7 @@ import stimulusgen.CurveStructureViewerFactory;
 import stimulusgen.DifficultyExperiment;
 import stimulusgen.GazeAnalyzer;
 import stimulusgen.MultiplicationViewerFactory;
+import stimulusgen.PupilAnalysisViewerFactory;
 import stimulusgen.PupilSizeViewer;
 
 
@@ -91,6 +92,7 @@ public class main {
 	      
 	      e.registerViewerFactory(new PlanarProjectionViewerFactory());
 	      e.addViewer(new PupilSizeViewer("f"));
+	      e.registerViewerFactory(new PupilAnalysisViewerFactory());
 	      
 	    //  e.registerViewerFactory(new BundledGraphFactory());
 	      

@@ -22,7 +22,7 @@ import perspectives.two_d.JavaAwtRenderer;
 public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 	
 	
-	private class Stimulus
+	public class Stimulus
 	{
 		double[] pupil;
 		double[] pupilsize;
@@ -61,12 +61,28 @@ public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 			return sum/pupil.length;
 		}
 		
+		public double averageType()
+		{
+			double sum = 0;
+			int count=0;
+			for (int i=20; i<pupilsize.length; i++)
+				if(pupilsize[i]>0)
+				{
+					sum += pupilsize[i];
+					count++;
+				}
+			return sum/count;
+		}
 
 	};
 	
-	private class User
+	public class User
 	{
 		Stimulus[] stimuli;
+		
+		public User(){
+			
+		}
 		
 		public double getMax()
 		{
@@ -117,6 +133,7 @@ public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 					maxt = stimuli[i].type;
 			
 			double[] r =new double[maxt+1];
+			double[] avgType =new double[maxt+1];
 			for (int i=0; i<r.length; i++)
 			{
 				double s = 0;
@@ -128,9 +145,33 @@ public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 						s+= stimuli[j].average();
 						c++;
 						double av = s/c;
-						System.out.println(i + " " + av);
+						//System.out.println("Avg by Type"+i + " " + av);
 					}
 				r[i] = s/c;
+				//System.out.println("Avg by Type"+i + " " + r[i]);
+			}
+			for (int k=0; k<avgType.length; k++)
+			{
+				double s = 0;
+				int c = 0;
+				double av=0;
+
+				for (int j=0; j<stimuli.length; j++)
+					if (stimuli[j].type == k)
+					{
+						
+						double avg= stimuli[j].averageType();
+						if(avg>=0)
+						{
+							s+= avg;
+							c++;
+							av = s/c;
+						}
+						
+					//	System.out.println("innerAvg by Type"+j + " " + av);
+					}
+				avgType[k] = av;
+				System.out.println(avgType[k]);
 			}
 			return r;
 		}
@@ -246,15 +287,30 @@ public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 			g.drawImage(stim, sx, 0-stim.getHeight()/2, sx+stim.getWidth()/2, 0, 0, 0, stim.getWidth(), stim.getHeight(),null);
 			if(currentStimulus != null && currentStimulus.gaze != null)
 			{
-				Color c = new Color(0, 0, 255, 60);
-				g.setColor(c);
+				
 				int j=0;
 				for(int i=0;i<currentStimulus.gaze.length;i++)
 				{
 					if(j<currentStimulus.pupilsize.length)
 					{
 						double d=currentStimulus.pupilsize[j]-2.5;
-						diameter=(int)Math.ceil(d*10);
+						diameter=(int)Math.ceil(d*15);
+						if(diameter>1 && diameter<=15){
+							Color c = new Color(0, 160, 155, 40);
+							g.setColor(c);
+						}
+						if(diameter>=16 && diameter<=22){
+							Color c = new Color(0, 255, 0, 40);
+							g.setColor(c);
+						}
+						if(diameter>=23 && diameter<=30){
+							Color c = new Color(255, 0, 255, 40);
+							g.setColor(c);
+						}
+						if(diameter>=31 && diameter<=45){
+							Color c = new Color(0, 255, 255, 40);
+							g.setColor(c);
+						}
 						j++;
 					}
 					
@@ -455,7 +511,10 @@ public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 						for (int k=0; k<gazepoint.size(); k++)
 							cs.gaze[k] = gazepoint.get(k);
 						//stimuli.add(cs);
-						
+						if(pupilDiameter.size()==0)
+						{
+							System.out.println("Got it");
+						}
 						cs.pupilsize = new double[pupilDiameter.size()];
 						for (int l=0; l<pupilDiameter.size(); l++)
 							cs.pupilsize[l] = pupilDiameter.get(l);
@@ -476,6 +535,7 @@ public class PupilSizeViewer extends Viewer implements JavaAwtRenderer{
 					cs.type = Integer.parseInt(lines.get(i).split("\t")[2]);
 					p.clear();
 					gazepoint.clear();
+					pupilDiameter.clear();
 					}
 				
 				}
